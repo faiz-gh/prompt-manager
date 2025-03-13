@@ -2,16 +2,14 @@ import React, { useState, useEffect } from "react";
 import Editor from "./Editor";
 import "./App.css";
 
-// 1) Import from react-toastify
+// Import react-toastify for non-blocking notifications
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-
-  // "raw" or "enhanced"
-  const [editorMode, setEditorMode] = useState("raw");
+  const [editorMode, setEditorMode] = useState("raw"); // "raw" or "enhanced"
 
   // Fetch templates once on mount
   useEffect(() => {
@@ -24,8 +22,11 @@ function App() {
       });
   }, []);
 
+  // When "New Template" is clicked, immediately prompt for a name.
   const handleNewTemplate = () => {
-    setSelectedTemplate({ id: null, name: "", content: "" });
+    const name = prompt("Enter a name for the new template:");
+    if (!name) return; // Cancel if no name is provided
+    setSelectedTemplate({ id: null, name, content: "" });
   };
 
   const handleSelectTemplate = (tmpl) => {
@@ -42,13 +43,11 @@ function App() {
 
     // Creating a new template
     if (!selectedTemplate.id) {
-      const name = alert("Enter a name for the new template:");
-      if (!name) return;
-
+      // Use the name provided earlier in handleNewTemplate
       fetch("https://api.prompts.faizghanchi.com/templates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, content: finalRawText }),
+        body: JSON.stringify({ name: selectedTemplate.name, content: finalRawText }),
       })
         .then((res) => {
           if (!res.ok) {
@@ -116,7 +115,7 @@ function App() {
     const finalRaw = window._editorRef?.getRawText?.();
     if (!finalRaw) return;
 
-    // Remove [readonly] from the copied text
+    // Remove [readonly] markers from the copied text
     const stripped = finalRaw.replace(/\[readonly\]/g, "");
 
     navigator.clipboard.writeText(stripped).then(
@@ -125,7 +124,7 @@ function App() {
     );
   };
 
-  // Attempt to get the raw text from the Editor, then call handleSaveTemplate
+  // Get the raw text from the Editor and then save the template
   const handleSaveClick = () => {
     const finalRaw = window._editorRef?.getRawText?.();
     if (finalRaw) {
@@ -148,11 +147,7 @@ function App() {
           {templates.map((tmpl) => (
             <li
               key={tmpl.id}
-              className={
-                selectedTemplate && selectedTemplate.id === tmpl.id
-                  ? "selected"
-                  : ""
-              }
+              className={selectedTemplate && selectedTemplate.id === tmpl.id ? "selected" : ""}
               onClick={() => handleSelectTemplate(tmpl)}
             >
               {tmpl.name}
@@ -182,9 +177,7 @@ function App() {
               mode={editorMode}
             />
           ) : (
-            <p style={{ padding: "10px" }}>
-              Select a template or create a new one.
-            </p>
+            <p style={{ padding: "10px" }}>Select a template or create a new one.</p>
           )}
         </div>
       </main>

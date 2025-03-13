@@ -124,12 +124,19 @@ function App() {
     if (!selectedTemplate) return;
     const finalRaw = window._editorRef?.getRawText?.();
     if (finalRaw === undefined || finalRaw === null) return;
-    const stripped = finalRaw.replace(/\[readonly\]/g, "");
+
+    // Remove [readonly] markers and replace {{{ and }}} with four backticks
+    const stripped = finalRaw
+      .replace(/\[readonly\]/g, "")
+      .replace(/{{{/g, "````")
+      .replace(/}}}/g, "````");
+
     navigator.clipboard.writeText(stripped).then(
       () => toast.info("Raw text copied to clipboard!"),
       () => toast.error("Failed to copy text.")
     );
   };
+
 
   // Save button: get final content from Editor and then save
   const handleSaveClick = () => {

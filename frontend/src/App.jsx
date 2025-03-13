@@ -2,16 +2,14 @@ import React, { useState, useEffect } from "react";
 import Editor from "./Editor";
 import "./App.css";
 
-// 1) Import from react-toastify
+// Import react-toastify for non-blocking notifications
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-
-  // "raw" or "enhanced"
-  const [editorMode, setEditorMode] = useState("raw");
+  const [editorMode, setEditorMode] = useState("raw"); // "raw" or "enhanced"
 
   // Fetch templates once on mount
   useEffect(() => {
@@ -24,11 +22,15 @@ function App() {
       });
   }, []);
 
+  // When "New Template" is clicked, immediately prompt for a name.
   const handleNewTemplate = () => {
-    setSelectedTemplate({ id: null, name: "", content: "" });
+    const name = prompt("Enter a name for the new template:");
+    if (!name) return; // Cancel if no name is provided
+    setSelectedTemplate({ id: null, name, content: "" });
   };
 
   const handleSelectTemplate = (tmpl) => {
+    console.log("Template selected:", tmpl);
     setSelectedTemplate(tmpl);
   };
 
@@ -125,10 +127,11 @@ function App() {
     );
   };
 
-  // Attempt to get the raw text from the Editor, then call handleSaveTemplate
+  // Get the raw text from the Editor and then call handleSaveTemplate
   const handleSaveClick = () => {
     const finalRaw = window._editorRef?.getRawText?.();
-    if (finalRaw) {
+    // Allow empty strings; check for undefined/null only.
+    if (finalRaw !== undefined && finalRaw !== null) {
       handleSaveTemplate(finalRaw);
     }
   };
@@ -177,7 +180,7 @@ function App() {
         <div className="editor-area">
           {selectedTemplate ? (
             <Editor
-              key={selectedTemplate.id || "new"}
+              // Removed the key prop so that Editor updates when selectedTemplate changes.
               initialContent={selectedTemplate.content || ""}
               mode={editorMode}
             />

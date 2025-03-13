@@ -5,7 +5,7 @@ services:
     build: ./backend
     container_name: prompt_backend
     ports:
-      - "8000:8000"
+      - "7979:7979"
     volumes:
       - ./backend/data:/app/data
     restart: unless-stopped

@@ -15,7 +15,7 @@ function App() {
 
   // Fetch templates once on mount
   useEffect(() => {
-    fetch("http://localhost:8000/templates")
+    fetch("https://ig4kgo88sgc88w0gc884cko0.faizghanchi.com/templates")
       .then((res) => res.json())
       .then((data) => setTemplates(data))
       .catch((err) => {
@@ -45,7 +45,7 @@ function App() {
       const name = prompt("Enter a name for the new template:");
       if (!name) return;
 
-      fetch("http://localhost:8000/templates", {
+      fetch("https://ig4kgo88sgc88w0gc884cko0.faizghanchi.com/templates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, content: finalRawText }),
@@ -67,7 +67,7 @@ function App() {
         });
     } else {
       // Updating existing template
-      fetch(`http://localhost:8000/templates/${selectedTemplate.id}`, {
+      fetch(`https://ig4kgo88sgc88w0gc884cko0.faizghanchi.com/templates/${selectedTemplate.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -93,7 +93,7 @@ function App() {
     if (!selectedTemplate || !selectedTemplate.id) return;
     if (!window.confirm("Are you sure you want to delete this template?")) return;
 
-    fetch(`http://localhost:8000/templates/${selectedTemplate.id}`, {
+    fetch(`https://ig4kgo88sgc88w0gc884cko0.faizghanchi.com/templates/${selectedTemplate.id}`, {
       method: "DELETE",
     })
       .then((res) => {

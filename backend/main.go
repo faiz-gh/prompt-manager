@@ -58,8 +58,8 @@ func main() {
 	r.HandleFunc("/templates/{id}", updateTemplate).Methods("PUT", "OPTIONS")
 	r.HandleFunc("/templates/{id}", deleteTemplate).Methods("DELETE", "OPTIONS")
 
-	log.Println("Server running on http://localhost:8000")
-	log.Fatal(http.ListenAndServe(":8000", r))
+	log.Println("Server running on http://localhost:")
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
 // corsMiddleware sets the CORS headers for each response

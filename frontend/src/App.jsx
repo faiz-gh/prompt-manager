@@ -30,6 +30,7 @@ function App() {
   };
 
   const handleSelectTemplate = (tmpl) => {
+    console.log("Template selected:", tmpl);
     setSelectedTemplate(tmpl);
   };
 
@@ -125,7 +126,7 @@ function App() {
   };
 
   // Get the raw text from the Editor and then save the template.
-  // Changed the check to allow empty strings.
+  // Allow empty strings (only checking for undefined/null).
   const handleSaveClick = () => {
     const finalRaw = window._editorRef?.getRawText?.();
     if (finalRaw !== undefined && finalRaw !== null) {
@@ -175,7 +176,7 @@ function App() {
         <div className="editor-area">
           {selectedTemplate ? (
             <Editor
-              key={selectedTemplate.id || "new"}
+              // Remove key prop so that Editor updates when selectedTemplate changes
               initialContent={selectedTemplate.content || ""}
               mode={editorMode}
             />

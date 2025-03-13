@@ -43,7 +43,7 @@ function App() {
 
     // Creating a new template
     if (!selectedTemplate.id) {
-      // Use the name provided earlier in handleNewTemplate
+      // Use the name provided in handleNewTemplate
       fetch("https://api.prompts.faizghanchi.com/templates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -113,7 +113,7 @@ function App() {
   const handleCopyRawText = () => {
     if (!selectedTemplate) return;
     const finalRaw = window._editorRef?.getRawText?.();
-    if (!finalRaw) return;
+    if (finalRaw === undefined || finalRaw === null) return;
 
     // Remove [readonly] markers from the copied text
     const stripped = finalRaw.replace(/\[readonly\]/g, "");
@@ -124,11 +124,14 @@ function App() {
     );
   };
 
-  // Get the raw text from the Editor and then save the template
+  // Get the raw text from the Editor and then save the template.
+  // Changed the check to allow empty strings.
   const handleSaveClick = () => {
     const finalRaw = window._editorRef?.getRawText?.();
-    if (finalRaw) {
+    if (finalRaw !== undefined && finalRaw !== null) {
       handleSaveTemplate(finalRaw);
+    } else {
+      toast.error("Editor content is undefined.");
     }
   };
 

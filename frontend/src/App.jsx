@@ -42,7 +42,7 @@ function App() {
 
     // Creating a new template
     if (!selectedTemplate.id) {
-      const name = prompt("Enter a name for the new template:");
+      const name = alert("Enter a name for the new template:");
       if (!name) return;
 
       fetch("https://api.prompts.faizghanchi.com/templates", {

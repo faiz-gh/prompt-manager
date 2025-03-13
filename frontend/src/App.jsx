@@ -22,7 +22,7 @@ function App() {
       });
   }, []);
 
-  // When a template is clicked, fetch its full details from the API
+  // When a template is clicked, fetch its full details (including content)
   const handleSelectTemplate = (tmpl) => {
     if (tmpl.id) {
       fetch(`https://api.prompts.faizghanchi.com/templates/${tmpl.id}`)
@@ -32,9 +32,10 @@ function App() {
         })
         .catch((err) => {
           console.error(err);
-          toast.error("Failed to fetch template.");
+          toast.error("Failed to fetch template details.");
         });
     } else {
+      // For a new template (id === null)
       setSelectedTemplate(tmpl);
     }
   };
@@ -43,7 +44,6 @@ function App() {
   const handleNewTemplate = () => {
     const name = prompt("Enter a name for the new template:");
     if (!name) return;
-    // For new templates, we don't fetch from API yet.
     setSelectedTemplate({ id: null, name, content: "" });
   };
 
@@ -51,13 +51,12 @@ function App() {
     setEditorMode((prev) => (prev === "raw" ? "enhanced" : "raw"));
   };
 
-  // Save the current template by calling the API
+  // Save the current template
   const handleSaveTemplate = (finalRawText) => {
     if (!selectedTemplate) return;
 
-    // Creating a new template
     if (!selectedTemplate.id) {
-      // Use the name from the prompt in handleNewTemplate
+      // New template: create it.
       fetch("https://api.prompts.faizghanchi.com/templates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,14 +78,11 @@ function App() {
           toast.error("Error creating template.");
         });
     } else {
-      // Updating an existing template
+      // Update existing template
       fetch(`https://api.prompts.faizghanchi.com/templates/${selectedTemplate.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: selectedTemplate.name,
-          content: finalRawText,
-        }),
+        body: JSON.stringify({ name: selectedTemplate.name, content: finalRawText }),
       })
         .then((res) => {
           if (!res.ok) {
@@ -127,18 +123,15 @@ function App() {
   const handleCopyRawText = () => {
     if (!selectedTemplate) return;
     const finalRaw = window._editorRef?.getRawText?.();
-    if (!finalRaw) return;
-
-    // Remove [readonly] markers from the copied text
+    if (finalRaw === undefined || finalRaw === null) return;
     const stripped = finalRaw.replace(/\[readonly\]/g, "");
-
     navigator.clipboard.writeText(stripped).then(
       () => toast.info("Raw text copied to clipboard!"),
       () => toast.error("Failed to copy text.")
     );
   };
 
-  // Get the raw text from the Editor and then save the template
+  // Save button: get final content from Editor and then save
   const handleSaveClick = () => {
     const finalRaw = window._editorRef?.getRawText?.();
     if (finalRaw !== undefined && finalRaw !== null) {
@@ -150,7 +143,7 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Toast container for notifications */}
+      {/* Toast notifications */}
       <ToastContainer position="top-right" autoClose={3000} />
 
       {/* Sidebar */}

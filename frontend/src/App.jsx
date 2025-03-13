@@ -24,9 +24,7 @@ function App() {
 
   // When "New Template" is clicked, immediately prompt for a name.
   const handleNewTemplate = () => {
-    const name = prompt("Enter a name for the new template:");
-    if (!name) return; // Cancel if no name is provided
-    setSelectedTemplate({ id: null, name, content: "" });
+    setSelectedTemplate({ id: null, name: "", content: "" });
   };
 
   const handleSelectTemplate = (tmpl) => {

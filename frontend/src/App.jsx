@@ -11,7 +11,7 @@ function App() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [editorMode, setEditorMode] = useState("raw"); // "raw" or "enhanced"
 
-  // Fetch templates once on mount
+  // Fetch list of templates on mount
   useEffect(() => {
     fetch("https://api.prompts.faizghanchi.com/templates")
       .then((res) => res.json())
@@ -22,33 +22,46 @@ function App() {
       });
   }, []);
 
-  // When "New Template" is clicked, immediately prompt for a name.
-  const handleNewTemplate = () => {
-    setSelectedTemplate({ id: null, name: "", content: "" });
+  // When a template is clicked, fetch its full details from the API
+  const handleSelectTemplate = (tmpl) => {
+    if (tmpl.id) {
+      fetch(`https://api.prompts.faizghanchi.com/templates/${tmpl.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setSelectedTemplate(data);
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("Failed to fetch template.");
+        });
+    } else {
+      setSelectedTemplate(tmpl);
+    }
   };
 
-  const handleSelectTemplate = (tmpl) => {
-    console.log("Template selected:", tmpl);
-    setSelectedTemplate(tmpl);
+  // When "New Template" is clicked, prompt for a name immediately.
+  const handleNewTemplate = () => {
+    const name = prompt("Enter a name for the new template:");
+    if (!name) return;
+    // For new templates, we don't fetch from API yet.
+    setSelectedTemplate({ id: null, name, content: "" });
   };
 
   const toggleEditorMode = () => {
     setEditorMode((prev) => (prev === "raw" ? "enhanced" : "raw"));
   };
 
-  // Save the current template
+  // Save the current template by calling the API
   const handleSaveTemplate = (finalRawText) => {
     if (!selectedTemplate) return;
 
     // Creating a new template
     if (!selectedTemplate.id) {
-      const name = prompt("Enter a name for the new template:");
-      if (!name) return;
-
+      // Use the name from the prompt in handleNewTemplate
       fetch("https://api.prompts.faizghanchi.com/templates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, content: finalRawText }),
+        body: JSON.stringify({ name: selectedTemplate.name, content: finalRawText }),
       })
         .then((res) => {
           if (!res.ok) {
@@ -66,7 +79,7 @@ function App() {
           toast.error("Error creating template.");
         });
     } else {
-      // Updating existing template
+      // Updating an existing template
       fetch(`https://api.prompts.faizghanchi.com/templates/${selectedTemplate.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -116,7 +129,7 @@ function App() {
     const finalRaw = window._editorRef?.getRawText?.();
     if (!finalRaw) return;
 
-    // Remove [readonly] from the copied text
+    // Remove [readonly] markers from the copied text
     const stripped = finalRaw.replace(/\[readonly\]/g, "");
 
     navigator.clipboard.writeText(stripped).then(
@@ -125,12 +138,13 @@ function App() {
     );
   };
 
-  // Get the raw text from the Editor and then call handleSaveTemplate
+  // Get the raw text from the Editor and then save the template
   const handleSaveClick = () => {
     const finalRaw = window._editorRef?.getRawText?.();
-    // Allow empty strings; check for undefined/null only.
     if (finalRaw !== undefined && finalRaw !== null) {
       handleSaveTemplate(finalRaw);
+    } else {
+      toast.error("Editor content is undefined.");
     }
   };
 
@@ -149,11 +163,7 @@ function App() {
           {templates.map((tmpl) => (
             <li
               key={tmpl.id}
-              className={
-                selectedTemplate && selectedTemplate.id === tmpl.id
-                  ? "selected"
-                  : ""
-              }
+              className={selectedTemplate && selectedTemplate.id === tmpl.id ? "selected" : ""}
               onClick={() => handleSelectTemplate(tmpl)}
             >
               {tmpl.name}
@@ -178,14 +188,11 @@ function App() {
         <div className="editor-area">
           {selectedTemplate ? (
             <Editor
-              // Removed the key prop so that Editor updates when selectedTemplate changes.
               initialContent={selectedTemplate.content || ""}
               mode={editorMode}
             />
           ) : (
-            <p style={{ padding: "10px" }}>
-              Select a template or create a new one.
-            </p>
+            <p style={{ padding: "10px" }}>Select a template or create a new one.</p>
           )}
         </div>
       </main>

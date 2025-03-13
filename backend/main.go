@@ -58,7 +58,7 @@ func main() {
 	r.HandleFunc("/templates/{id}", updateTemplate).Methods("PUT", "OPTIONS")
 	r.HandleFunc("/templates/{id}", deleteTemplate).Methods("DELETE", "OPTIONS")
 
-	log.Println("Server running on http://localhost:7979")
+	log.Println("Server running on https://api.prompts.faizghanchi.com")
 	log.Fatal(http.ListenAndServe(":7979", r))
 }
 
@@ -66,7 +66,7 @@ func main() {
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Change "*" to specific domain if needed, e.g. "http://localhost:3000"
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Origin", "https://prompts.faizghanchi.com")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 

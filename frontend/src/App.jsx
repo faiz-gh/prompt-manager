@@ -6,7 +6,7 @@ import "./App.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const API_URL = process.env.REACT_APP_API_URL || "https://api.prompts.faizghanchi.com";
+const API_URL = process.env.REACT_APP_API_URL || "https://api.promptmanager.pairpad.com";
 
 function App() {
   const [templates, setTemplates] = useState([]);

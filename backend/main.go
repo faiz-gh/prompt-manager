@@ -59,7 +59,7 @@ func main() {
 	r.HandleFunc("/templates/{id}", updateTemplate).Methods("PUT", "OPTIONS")
 	r.HandleFunc("/templates/{id}", deleteTemplate).Methods("DELETE", "OPTIONS")
 
-	log.Println("Server running on https://api.prompts.faizghanchi.com")
+	log.Println("Server running on https://api.promptmanager.pairpad.com")
 	log.Fatal(http.ListenAndServe(":7979", r))
 }
 
@@ -68,7 +68,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		allowedOrigin := os.Getenv("CORS_ORIGIN")
 		if allowedOrigin == "" {
-			allowedOrigin = "https://prompts.faizghanchi.com" // fallback
+			allowedOrigin = "https://promptmanager.pairpad.com" // fallback
 		}
 
 		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)

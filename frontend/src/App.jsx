@@ -6,6 +6,8 @@ import "./App.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const API_URL = process.env.REACT_APP_API_URL || "https://api.prompts.faizghanchi.com";
+
 function App() {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -13,7 +15,7 @@ function App() {
 
   // Fetch list of templates on mount
   useEffect(() => {
-    fetch("https://api.prompts.faizghanchi.com/templates")
+    fetch(`${API_URL}/templates`)
       .then((res) => res.json())
       .then((data) => setTemplates(data))
       .catch((err) => {
@@ -25,7 +27,7 @@ function App() {
   // When a template is clicked, fetch its full details (including content)
   const handleSelectTemplate = (tmpl) => {
     if (tmpl.id) {
-      fetch(`https://api.prompts.faizghanchi.com/templates/${tmpl.id}`)
+      fetch(`${API_URL}/templates/${tmpl.id}`)
         .then((res) => res.json())
         .then((data) => {
           setSelectedTemplate(data);
@@ -57,7 +59,7 @@ function App() {
 
     if (!selectedTemplate.id) {
       // New template: create it.
-      fetch("https://api.prompts.faizghanchi.com/templates", {
+      fetch(`${API_URL}/templates`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: selectedTemplate.name, content: finalRawText }),
@@ -79,7 +81,7 @@ function App() {
         });
     } else {
       // Update existing template
-      fetch(`https://api.prompts.faizghanchi.com/templates/${selectedTemplate.id}`, {
+      fetch(`${API_URL}/templates/${selectedTemplate.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: selectedTemplate.name, content: finalRawText }),
@@ -102,7 +104,7 @@ function App() {
     if (!selectedTemplate || !selectedTemplate.id) return;
     if (!window.confirm("Are you sure you want to delete this template?")) return;
 
-    fetch(`https://api.prompts.faizghanchi.com/templates/${selectedTemplate.id}`, {
+    fetch(`${API_URL}/templates/${selectedTemplate.id}`, {
       method: "DELETE",
     })
       .then((res) => {

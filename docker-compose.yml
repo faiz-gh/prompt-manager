@@ -9,6 +9,8 @@ services:
     volumes:
       - ./backend/data:/app/data
     restart: unless-stopped
+    environment:
+      - CORS_ORIGIN=${BACKEND_CORS_ORIGIN}
 
   frontend:
     build: ./frontend
@@ -16,3 +18,5 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL}

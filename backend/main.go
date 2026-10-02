@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -65,8 +66,12 @@ func main() {
 // corsMiddleware sets the CORS headers for each response
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Change "*" to specific domain if needed, e.g. "http://localhost:3000"
-		w.Header().Set("Access-Control-Allow-Origin", "https://prompts.faizghanchi.com")
+		allowedOrigin := os.Getenv("CORS_ORIGIN")
+		if allowedOrigin == "" {
+			allowedOrigin = "https://prompts.faizghanchi.com" // fallback
+		}
+
+		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 

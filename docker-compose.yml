@@ -4,8 +4,8 @@ services:
   backend:
     build: ./backend
     container_name: prompt_backend
-    ports:
-      - "7979:7979"
+    expose:
+      - "7979"
     volumes:
       - ./backend/data:/app/data
     restart: unless-stopped
@@ -15,8 +15,8 @@ services:
   frontend:
     build: ./frontend
     container_name: prompt_frontend
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     restart: unless-stopped
     environment:
       - REACT_APP_API_URL=${REACT_APP_API_URL}
